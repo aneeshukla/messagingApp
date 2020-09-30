@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"
-    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
     integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
     crossorigin="anonymous"></script>
@@ -15,9 +14,9 @@
     <div class="jumbotron">
         <h1 class="display-4">Messaging App</h1>
         <br>
-        <input placeholder="Name" class="form-control">
+        <input id="name" placeholder="Name" class="form-control">
         <br>
-        <input placeholder="Message" class="form-control">
+        <textarea id="msg" placeholder="Message" class="form-control"></textarea>
         <br>
         <button id="send" class="btn btn-success">Send</button>
     </div>
@@ -29,8 +28,9 @@
     $(() => {
         getMessages();
         console.log('App works')
-        $("#send").click(()=>{
-            addMessages({ name: "Aneesh", text: "Hello World!" })
+        $("#send").click(() => {
+            let msg = { name: $("#name").val(), text: $("#msg").val() }
+            postMessages(msg);
         })
     })
 
@@ -38,9 +38,14 @@
         $("#msgs").append(`<div class="alert alert-info"> <h4> ${msg.name} </h4> <p> ${msg.text} </p> </div>`)
     }
 
-    function getMessages(){
-        $.get('http://localhost:3000/messages', (data)=>{
+    function getMessages() {
+        $.get('http://localhost:3000/messages', (data) => {
             data.forEach(addMessages);
         })
     }
+
+    function postMessages(msg) {
+        $.post('http://localhost:3000/message', msg)
+    }
+
 </script>
