@@ -17,6 +17,8 @@
         <br>
         <input placeholder="Name" class="form-control">
         <br>
+        <input placeholder="Message" class="form-control">
+        <br>
         <button id="send" class="btn btn-success">Send</button>
     </div>
     <div id="msgs" class="container">
@@ -38,9 +40,7 @@
 
     function getMessages(){
         $.get('http://localhost:3000/messages', (data)=>{
-            data.forEach(element => {
-                addMessages(element);
-            });
+            data.forEach(addMessages);
         })
     }
 </script>
