@@ -1,7 +1,11 @@
 let express = require('express');
+let bodyParser = require('body-parser');
 let app = express();
 
 app.use(express.static(__dirname));
+app.use(bodyParser.json()); // json added to let the body parser know that JSON is expected to be coming in
+app.use(bodyParser.urlencoded({ extended: false }))     // whatever comes from the browser is URL encoded and will show undefined if this line is not added
+
 
 let msgs = [
     {
@@ -15,6 +19,11 @@ let msgs = [
 ]
 app.get('/messages', (req, res)=>{
     res.send(msgs);
+})
+
+app.post('/message', (req, res)=>{
+    msgs.push(req.body);
+    res.sendStatus(200);
 })
 
 let server = app.listen(3000, ()=>{
