@@ -10,6 +10,8 @@ app.use(express.static(__dirname));
 app.use(bodyParser.json()); // json added to let the body parser know that JSON is expected to be coming in
 app.use(bodyParser.urlencoded({ extended: false }))     // whatever comes from the browser is URL encoded and will show undefined if this line is not added
 
+mongoose.Promise = Promise;
+
 let dbURL = process.env['DB_URL'];
 
 let Message = mongoose.model('Message', {
@@ -18,20 +20,29 @@ let Message = mongoose.model('Message', {
 });
 
 app.get('/messages', (req, res) => {
-    Message.find({}, (err, msgs)=>{
-        res.send(msgs);      
+    Message.find({}, (err, msgs) => {
+        res.send(msgs);
     })
 })
 
-app.post('/message', (req, res) => {
+app.post('/message', async (req, res) => {
     let msg = new Message(req.body);
-    msg.save((err)=>{
-        if(err) res.sendStatus(500);
 
-        io.emit('msg', req.body)
-        res.sendStatus(200);
-    })
-})
+    let savedMsg = await msg.save()
+
+    let censored = await Message.findOne({ text: "badword" });
+
+    if (censored){
+        console.log(censored)
+        await Message.deleteOne({ _id: censored.id });
+    }
+    else{
+        io.emit('msg', req.body);
+        console.log("saved!");
+    }
+
+    res.sendStatus(200);
+});
 
 io.on('connection', (socket) => {
     console.log('USER connected!')
